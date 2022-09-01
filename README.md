@@ -45,12 +45,12 @@ Build Dockerfile into a docker image to deploy to the cloud.
 ## Endpoint Description's
 
 ## Analysis Status
-Any time an analysis is submitted it given a process_id to have the analysis run in the background using [FastAPI's Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/). To check the
-status of an analysis, you can call this endpoint with the process_id.
+Any time a territory map is being submitted to be built it given a process_id to have the territory be built in the background using [FastAPI's Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/). To check the
+status of your territory being built you can call this endpoint with the process_id.
 
 ## Example Call
 ```shell
-/api/v1/analysis/status/472e29dc-91a8-41d3-b05f-cee34006e3f7
+/api/v1/services/status/472e29dc-91a8-41d3-b05f-cee34006e3f7
 ```
 
 ## Example Output - Still Running
