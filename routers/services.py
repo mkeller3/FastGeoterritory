@@ -15,7 +15,7 @@ def status(process_id: str):
     return processes[process_id]
 
 @router.post("/build_territories_by_feature_count/")
-async def map_suitability(info: models.BuildTerritoriesByFeatureCount, request: Request, background_tasks: BackgroundTasks):
+async def build_territories_by_feature_count(info: models.BuildTerritoriesByFeatureCount, request: Request, background_tasks: BackgroundTasks):
     """
     Method to build territories based off of number of features per group.
 
@@ -35,7 +35,37 @@ async def map_suitability(info: models.BuildTerritoriesByFeatureCount, request: 
         territory_queries.build_territories_by_features_per_group,
         app=request.app,
         table=info.table,
-        number_of_features_per_group=info.number_of_features_per_group,
+        number_of_features_per_territories=info.number_of_features_per_territories,
+        process_id=process_id
+    )
+
+    return {
+        "process_id": process_id,
+        "url": process_url
+    }
+
+@router.post("/build_territories_by_group_count/")
+async def build_territories_by_group_count(info: models.BuildTerritoriesByGroupCount, request: Request, background_tasks: BackgroundTasks):
+    """
+    Method to build territories based off of number of features per group.
+
+    """
+
+    process_id = utilities.get_new_process_id()
+
+    process_url = str(request.base_url)
+
+    process_url += f"api/v1/services/status/{process_id}"
+
+    processes[process_id] = {
+        "status": "PENDING"
+    }
+
+    background_tasks.add_task(
+        territory_queries.build_territories_by_group_count,
+        app=request.app,
+        table=info.table,
+        number_of_territories=info.number_of_territories,
         process_id=process_id
     )
 
@@ -45,7 +75,7 @@ async def map_suitability(info: models.BuildTerritoriesByFeatureCount, request: 
     }
 
 @router.post("/build_territories_by_column_sum/")
-async def map_suitability(info: models.BuildTerritoriesByColumnSum, request: Request, background_tasks: BackgroundTasks):
+async def build_territories_by_column_sum(info: models.BuildTerritoriesByColumnSum, request: Request, background_tasks: BackgroundTasks):
     """
     Method to build territories based off of sum of column
 

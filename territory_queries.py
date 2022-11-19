@@ -4,7 +4,92 @@ from fastapi import FastAPI
 import utilities
 from routers import services
 
-async def build_territories_by_features_per_group(app: FastAPI, table: str, number_of_features_per_group: int, process_id: str):
+async def generate_territory_column(app: FastAPI, table: str, number_of_features_per_territories: int, number_of_territories: int):
+    pool = app.state.database
+
+    async with pool.acquire() as con:
+        geometry_type = await utilities.get_geometry_type(app, table)
+
+        geometry_column = "geom"
+
+        if 'Point' not in geometry_type:
+
+            await utilities.set_point_geometry(app, table)
+
+            geometry_column = "point_geom"
+
+        for i in range(0,number_of_territories):
+            original_id = await utilities.get_starting_id(app, table, geometry_column)
+
+            query = f"""
+                UPDATE "{table}"
+                SET territory_number = {i}
+                WHERE gid in (
+                    SELECT b.gid
+                    FROM "{table}" a,
+                    "{table}" b
+                    WHERE a.gid = {original_id}
+                    AND a.territory_number IS NULL
+                    AND b.territory_number IS NULL
+                    ORDER BY a.{geometry_column} <-> b.{geometry_column} ASC
+                    LIMIT {number_of_features_per_territories}
+                )
+            """
+
+            await con.fetchrow(query)
+    
+    query = f"""
+        UPDATE "{table}"
+        SET territory_number = {number_of_territories}
+        WHERE territory_number IS NULL
+    """
+
+    await con.fetchrow(query)
+    
+    if 'Point' not in geometry_type:
+        query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS point_geom;"""
+
+        await con.fetchrow(query)
+
+async def build_territories_by_group_count(app: FastAPI, table: str, number_of_territories: int, process_id: str):
+    """
+    Method to build territories based off of number of groups.
+
+    """
+
+    start = datetime.datetime.now()
+
+    try:
+
+        pool = app.state.database
+
+        async with pool.acquire() as con:
+
+            query = f"""
+                SELECT COUNT(*)
+                FROM "{table}" a
+            """
+
+            results = await con.fetchrow(query)
+
+            number_of_features = results['count']
+
+            number_of_features_per_territories = int(number_of_features / number_of_territories) + 1
+
+            await generate_territory_column(app, table, number_of_features_per_territories, number_of_territories)
+
+            services.processes[process_id]['status'] = "SUCCESS"
+            services.processes[process_id]['completion_time'] = datetime.datetime.now()
+            services.processes[process_id]['run_time_in_seconds'] = datetime.datetime.now()-start
+
+    except Exception as error:
+        services.processes[process_id]['status'] = "FAILURE"
+        services.processes[process_id]['error'] = str(error)
+        services.processes[process_id]['completion_time'] = datetime.datetime.now()
+        services.processes[process_id]['run_time_in_seconds'] = datetime.datetime.now()-start
+
+
+async def build_territories_by_features_per_group(app: FastAPI, table: str, number_of_features_per_territories: int, process_id: str):
     """
     Method to build territories based off of number of features per group.
 
@@ -35,50 +120,9 @@ async def build_territories_by_features_per_group(app: FastAPI, table: str, numb
 
             await con.fetchrow(query)
 
-            number_of_groups = int(number_of_features / number_of_features_per_group)
+            number_of_territories = int(number_of_features / number_of_features_per_territories)
 
-            geometry_type = await utilities.get_geometry_type(app, table)
-
-            geometry_column = "geom"
-
-            if 'Point' not in geometry_type:
-
-                await utilities.set_point_geometry(app, table)
-
-                geometry_column = "point_geom"
-
-            for i in range(0,number_of_groups):
-                original_id = await utilities.get_starting_id(app, table, geometry_column)
-
-                query = f"""
-                    UPDATE "{table}"
-                    SET territory_number = {i}
-                    WHERE gid in (
-                        SELECT b.gid
-                        FROM "{table}" a,
-                        "{table}" b
-                        WHERE a.gid = {original_id}
-                        AND a.territory_number IS NULL
-                        AND b.territory_number IS NULL
-                        ORDER BY a.{geometry_column} <-> b.{geometry_column} ASC
-                        LIMIT {number_of_features_per_group}
-                    )
-                """
-
-                await con.fetchrow(query)
-            
-            query = f"""
-                UPDATE "{table}"
-                SET territory_number = {number_of_groups}
-                WHERE territory_number IS NULL
-            """
-
-            await con.fetchrow(query)
-            
-            if 'Point' not in geometry_type:
-                query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS point_geom;"""
-
-                await con.fetchrow(query)
+            await generate_territory_column(app, table, number_of_features_per_territories, number_of_territories)
             
             services.processes[process_id]['status'] = "SUCCESS"
             services.processes[process_id]['completion_time'] = datetime.datetime.now()

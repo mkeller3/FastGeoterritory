@@ -96,7 +96,7 @@ Build new random territories for all Chick Fil A locations with 100 stores in ea
 ```json
 {
     "table": "chick_fil_a_locations",
-    "number_of_features_per_group": 100
+    "number_of_features_per_territories": 100
 }
 ```
 
