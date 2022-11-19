@@ -39,6 +39,7 @@ Build Dockerfile into a docker image to deploy to the cloud.
 | ------ | -------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | `GET` | `/api/v1/analysis/status/{process_id}`                                            | [Analysis Status](#Analysis-Status)  |
 | `POST`  | `/api/v1/services/build_territories_by_feature_count/`                          | [Build Territories By Feature Count](#build-territories-by-feature-count)      |
+| `POST`  | `/api/v1/services/build_territories_by_group_count/`                          | [Build Territories By Group Count](#build-territories-by-group-count)      |
 | `POST`  | `/api/v1/services/build_territories_by_column_sum/`                             | [Build Territories By Column Sum](#build-territories-by-column-sum)  |
 | `POST`  | `/api/v1/services/build_territories_from_points_column/`                        | [Build Territories From Points Column](#build-territories-from-points-column)  |
 | `GET`  | `/api/v1/health_check`                                                           | Server health check: returns `200 OK`    |
@@ -142,6 +143,52 @@ Build new random territories for all Chick Fil A locations with 100 stores in ea
 | 18               | 100                |
 | 19               | 100                |
 | 20               | 15                 |
+
+## Build Territories By Group Count
+
+### Description
+
+Build territories based off of the number groups the users specifies. A new column will be added to the table called `territory_number`. This will distinguish what territory a feature is part. The api works by starting at one feature, and finding the x closest amount of features to that feature based off of the number of groups you specified. Once it finds the x closest feature, all those features will be assigned that territory, and the loop will continue until all features are assigned a territory.
+
+### Example
+
+Build 5 new random territories for all Chick Fil A locations.
+
+### Example Input
+
+```json
+{
+    "table": "chick_fil_a_locations",
+    "number_of_territories": 5
+}
+```
+
+### Example Output
+
+```json
+{
+  "process_id": "c8d7b8d8-3e82-4f93-b441-55a5f51c4171",
+  "url": "http://127.0.0.1:8000/api/v1/analysis/status/c8d7b8d8-3e82-4f93-b441-55a5f51c4171"
+}
+```
+
+### Input Map
+
+![chick fil a input map](/images/default.png)
+
+### Output Map
+
+![chick fil a group_count map](/images/group_count.png)
+
+### Example Stats
+
+| Territory Number | Number of Features |
+|------------------|--------------------|
+| 0                | 404                |
+| 1                | 404                |
+| 2                | 404                |
+| 3                | 404                |
+| 4                | 399                |
 
 ## Build Territories By Column Sum
 

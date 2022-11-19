@@ -76,6 +76,14 @@ async def build_territories_by_group_count(app: FastAPI, table: str, number_of_t
 
             number_of_features_per_territory = int(number_of_features / number_of_territories) + 1
 
+            query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS territory_number;"""
+
+            await con.fetchrow(query)
+
+            query = f"""ALTER TABLE "{table}" ADD COLUMN territory_number integer;"""
+
+            await con.fetchrow(query)
+
             await generate_territory_column(app, table, number_of_features_per_territory, number_of_territories)
 
             services.processes[process_id]['status'] = "SUCCESS"
