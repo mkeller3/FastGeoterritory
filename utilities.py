@@ -24,8 +24,8 @@ async def get_starting_id(app: FastAPI, table: str, geometry_column: str)-> int:
             FROM "{table}" a
             CROSS JOIN "{table}" b
             WHERE a.gid != b.gid
-            AND a.group_number IS NULL
-            AND b.group_number IS NULL
+            AND a.territory_number IS NULL
+            AND b.territory_number IS NULL
             ORDER BY a.{geometry_column} <-> b.{geometry_column} DESC
             LIMIT 1
         """

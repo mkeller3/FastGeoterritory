@@ -79,3 +79,40 @@ status of your territory being built you can call this endpoint with the process
     "run_time_in_seconds": 0.040892
 }
 ```
+
+
+## Build Territories By Feature Count
+
+### Description
+
+Assign each feature into a territory based off of the number of features per territory. A new column will be added to the table called `territory_number`. This will distinguish what territory a feature is part. The api works by starting at one feature, and finding the x closest amount of features to that feature. Once it finds the x closest feature, all those features will be assigned that territory, and the loop will continue until all features are assigned a territory.
+
+### Example
+
+Build new random territories for all Chick Fil A locations with 100 stores in each territory.
+
+### Example Input
+
+```json
+{
+    "table": "chick_fil_a_locations",
+    "number_of_features_per_group": 100
+}
+```
+
+### Example Output
+
+```json
+{
+  "process_id": "c8d7b8d8-3e82-4f93-b441-55a5f51c4171",
+  "url": "http://127.0.0.1:8000/api/v1/analysis/status/c8d7b8d8-3e82-4f93-b441-55a5f51c4171"
+}
+```
+
+### Input Map
+
+![chick fil a input map](/images/default.png)
+
+### Output Map
+
+![chick fil a feature_count map](/images/feature_count.png)

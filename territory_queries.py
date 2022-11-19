@@ -27,11 +27,11 @@ async def build_territories_by_features_per_group(app: FastAPI, table: str, numb
 
             number_of_features = results['count']
 
-            query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS group_number;"""
+            query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS territory_number;"""
 
             await con.fetchrow(query)
 
-            query = f"""ALTER TABLE "{table}" ADD COLUMN group_number integer;"""
+            query = f"""ALTER TABLE "{table}" ADD COLUMN territory_number integer;"""
 
             await con.fetchrow(query)
 
@@ -52,14 +52,14 @@ async def build_territories_by_features_per_group(app: FastAPI, table: str, numb
 
                 query = f"""
                     UPDATE "{table}"
-                    SET group_number = {i}
+                    SET territory_number = {i}
                     WHERE gid in (
                         SELECT b.gid
                         FROM "{table}" a,
                         "{table}" b
                         WHERE a.gid = {original_id}
-                        AND a.group_number IS NULL
-                        AND b.group_number IS NULL
+                        AND a.territory_number IS NULL
+                        AND b.territory_number IS NULL
                         ORDER BY a.{geometry_column} <-> b.{geometry_column} ASC
                         LIMIT {number_of_features_per_group}
                     )
@@ -106,11 +106,11 @@ async def build_territories_by_sum_of_column_per_group(app: FastAPI, table: str,
 
             number_of_features_assigned = 0
 
-            query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS group_number;"""
+            query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS territory_number;"""
 
             await con.fetchrow(query)
 
-            query = f"""ALTER TABLE "{table}" ADD COLUMN group_number integer;"""
+            query = f"""ALTER TABLE "{table}" ADD COLUMN territory_number integer;"""
 
             await con.fetchrow(query)
 
@@ -134,8 +134,8 @@ async def build_territories_by_sum_of_column_per_group(app: FastAPI, table: str,
                     FROM "{table}" a,
                     "{table}" b
                     WHERE a.gid = {original_id}
-                    AND a.group_number IS NULL
-                    AND b.group_number IS NULL
+                    AND a.territory_number IS NULL
+                    AND b.territory_number IS NULL
                     ORDER BY a.{geometry_column} <-> b.{geometry_column} ASC
                 """
 
@@ -155,7 +155,7 @@ async def build_territories_by_sum_of_column_per_group(app: FastAPI, table: str,
 
                 query = f"""
                     UPDATE "{table}"
-                    SET group_number = {counter}
+                    SET territory_number = {counter}
                     WHERE gid in ('{gids_list}')
                 """
 
