@@ -80,7 +80,6 @@ status of your territory being built you can call this endpoint with the process
 }
 ```
 
-
 ## Build Territories By Feature Count
 
 ### Description
@@ -116,3 +115,54 @@ Build new random territories for all Chick Fil A locations with 100 stores in ea
 ### Output Map
 
 ![chick fil a feature_count map](/images/feature_count.png)
+
+## Build Territories By Column Sum
+
+### Description
+
+Assign each feature into a territory based off of the sum of a column. A new column will be added to the table called `territory_number`. This will distinguish what territory a feature is part. The api works by starting at one feature, and finding the x closest amount of features to that feature. Once it finds the x closest feature, each feature will be assigned to the group until the `ideal_sum_of_column_per_territory` is met. Once met, it will start building a new group.
+
+### Example
+
+Build new random territories for all Chick Fil A locations with a sales volume of around $400,000.
+
+### Example Input
+
+```json
+{
+    "table": "chick_fil_a_locations",
+    "column": "salesvol",
+    "ideal_sum_of_column_per_territory": 400000
+}
+```
+
+### Example Output
+
+```json
+{
+  "process_id": "c8d7b8d8-3e82-4f93-b441-55a5f51c4171",
+  "url": "http://127.0.0.1:8000/api/v1/analysis/status/c8d7b8d8-3e82-4f93-b441-55a5f51c4171"
+}
+```
+
+### Input Map
+
+![chick fil a input map](/images/default.png)
+
+### Output Map
+
+![chick fil a column_sum map](/images/column_sum.png)
+
+### Example Stats
+
+| Territory Number | Sum of Sales Volume |
+|------------------|---------------------|
+| 0                | 400009              |
+| 1                | 401329              |
+| 2                | 400659              |
+| 3                | 402838              |
+| 4                | 400434              |
+| 5                | 401452              |
+| 6                | 400668              |
+| 7                | 400695              |
+| 8                | 400414              |
