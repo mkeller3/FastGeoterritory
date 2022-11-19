@@ -40,6 +40,7 @@ Build Dockerfile into a docker image to deploy to the cloud.
 | `GET` | `/api/v1/analysis/status/{process_id}`                                            | [Analysis Status](#Analysis-Status)  |
 | `POST`  | `/api/v1/services/build_territories_by_feature_count/`                          | [Build Territories By Feature Count](#build-territories-by-feature-count)      |
 | `POST`  | `/api/v1/services/build_territories_by_column_sum/`                             | [Build Territories By Column Sum](#build-territories-by-column-sum)  |
+| `POST`  | `/api/v1/services/build_territories_from_points_column/`                        | [Build Territories From Points Column](#build-territories-from-points-column)  |
 | `GET`  | `/api/v1/health_check`                                                           | Server health check: returns `200 OK`    |
 
 ## Endpoint Description's
@@ -192,3 +193,35 @@ Build new random territories for all Chick Fil A locations with a sales volume o
 | 6                | 400668              |
 | 7                | 400695              |
 | 8                | 400414              |
+
+## Build Territories From Points Column
+
+### Description
+
+Build polygon territories based off a column in a point table. This endpoint uses [ST_VoronoiPolygons](https://postgis.net/docs/ST_VoronoiPolygons.html) to generate smaller polygons for each feature. After each polygon is assigned, it will combine all polygons with the same column value into larger polygons.
+
+### Example
+
+Build new territories for all Chick Fil A locations based off of the `territory_number` column.
+
+### Example Input
+
+```json
+{
+    "table": "chick_fil_a_locations",
+    "column": "territory_number",
+}
+```
+
+### Example Output
+
+```json
+{
+  "process_id": "c8d7b8d8-3e82-4f93-b441-55a5f51c4171",
+  "url": "http://127.0.0.1:8000/api/v1/analysis/status/c8d7b8d8-3e82-4f93-b441-55a5f51c4171"
+}
+```
+
+### Output Map
+
+![chick fil a point_polygons map](/images/point_polygons.png)

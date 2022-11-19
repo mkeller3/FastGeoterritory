@@ -8,3 +8,7 @@ class BuildTerritoriesByColumnSum(BaseModel):
     table: str
     column: str
     ideal_sum_of_column_per_territory: int
+
+class BuildPolygonTerritoriesFromPointColumn(BaseModel):
+    table: str
+    column: str

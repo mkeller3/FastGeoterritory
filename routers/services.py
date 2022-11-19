@@ -14,7 +14,7 @@ def status(process_id: str):
         return {"status": "UNKNOWN", "error": "This process_id does not exist."}
     return processes[process_id]
 
-@router.post("/build_territories_by_feature_count/", tags=["Services"])
+@router.post("/build_territories_by_feature_count/")
 async def map_suitability(info: models.BuildTerritoriesByFeatureCount, request: Request, background_tasks: BackgroundTasks):
     """
     Method to build territories based off of number of features per group.
@@ -44,7 +44,7 @@ async def map_suitability(info: models.BuildTerritoriesByFeatureCount, request: 
         "url": process_url
     }
 
-@router.post("/build_territories_by_column_sum/", tags=["Services"])
+@router.post("/build_territories_by_column_sum/")
 async def map_suitability(info: models.BuildTerritoriesByColumnSum, request: Request, background_tasks: BackgroundTasks):
     """
     Method to build territories based off of sum of column
@@ -67,6 +67,36 @@ async def map_suitability(info: models.BuildTerritoriesByColumnSum, request: Req
         table=info.table,
         column=info.column,
         ideal_sum_of_column_per_territory=info.ideal_sum_of_column_per_territory,
+        process_id=process_id
+    )
+
+    return {
+        "process_id": process_id,
+        "url": process_url
+    }
+
+@router.post("/build_territories_from_points_column/", tags=["Services"])
+async def build_territories_from_points_column(info: models.BuildPolygonTerritoriesFromPointColumn, request: Request, background_tasks: BackgroundTasks):
+    """
+    Method to build polygon territories based off of points
+
+    """
+
+    process_id = utilities.get_new_process_id()
+
+    process_url = str(request.base_url)
+
+    process_url += f"api/v1/services/status/{process_id}"
+
+    processes[process_id] = {
+        "status": "PENDING"
+    }
+
+    background_tasks.add_task(
+        territory_queries.build_territories_from_point_column,
+        app=request.app,
+        table=info.table,
+        column=info.column,
         process_id=process_id
     )
 

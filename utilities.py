@@ -1,5 +1,15 @@
+import random
+import string
 from fastapi import FastAPI
 import uuid
+
+def get_new_table_id() -> str:
+    """
+    Method to return a new table id
+    """
+    letters = string.ascii_lowercase
+
+    return ''.join(random.choice(letters) for i in range(50))
 
 def get_new_process_id() -> str:
     """
