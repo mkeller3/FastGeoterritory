@@ -116,11 +116,37 @@ Build new random territories for all Chick Fil A locations with 100 stores in ea
 
 ![chick fil a feature_count map](/images/feature_count.png)
 
+### Example Stats
+
+| Territory Number | Number of Features |
+|------------------|--------------------|
+| 0                | 100                |
+| 1                | 100                |
+| 2                | 100                |
+| 3                | 100                |
+| 4                | 100                |
+| 5                | 100                |
+| 6                | 100                |
+| 7                | 100                |
+| 8                | 100                |
+| 9                | 100                |
+| 10               | 100                |
+| 11               | 100                |
+| 12               | 100                |
+| 13               | 100                |
+| 14               | 100                |
+| 15               | 100                |
+| 16               | 100                |
+| 17               | 100                |
+| 18               | 100                |
+| 19               | 100                |
+| 20               | 15                 |
+
 ## Build Territories By Column Sum
 
 ### Description
 
-Assign each feature into a territory based off of the sum of a column. A new column will be added to the table called `territory_number`. This will distinguish what territory a feature is part. The api works by starting at one feature, and finding the x closest amount of features to that feature. Once it finds the x closest feature, each feature will be assigned to the group until the `ideal_sum_of_column_per_territory` is met. Once met, it will start building a new group.
+Assign each feature into a territory based off of the sum of a column. A new column will be added to the table called `territory_number`. This will distinguish what territory a feature is part. The api works by starting at one feature, and finding the closest features to that feature. Once it finds the closest feature, each feature will be assigned to the group until the `ideal_sum_of_column_per_territory` is met. Once met, it will start building a new group.
 
 ### Example
 

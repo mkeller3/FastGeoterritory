@@ -67,6 +67,14 @@ async def build_territories_by_features_per_group(app: FastAPI, table: str, numb
 
                 await con.fetchrow(query)
             
+            query = f"""
+                UPDATE "{table}"
+                SET territory_number = {number_of_groups}
+                WHERE territory_number IS NULL
+            """
+
+            await con.fetchrow(query)
+            
             if 'Point' not in geometry_type:
                 query = f"""ALTER TABLE "{table}" DROP COLUMN IF EXISTS point_geom;"""
 
