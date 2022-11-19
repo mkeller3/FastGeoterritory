@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import utilities
 from routers import services
 
-async def generate_territory_column(app: FastAPI, table: str, number_of_features_per_territories: int, number_of_territories: int):
+async def generate_territory_column(app: FastAPI, table: str, number_of_features_per_territory: int, number_of_territories: int):
     pool = app.state.database
 
     async with pool.acquire() as con:
@@ -32,7 +32,7 @@ async def generate_territory_column(app: FastAPI, table: str, number_of_features
                     AND a.territory_number IS NULL
                     AND b.territory_number IS NULL
                     ORDER BY a.{geometry_column} <-> b.{geometry_column} ASC
-                    LIMIT {number_of_features_per_territories}
+                    LIMIT {number_of_features_per_territory}
                 )
             """
 
@@ -74,9 +74,9 @@ async def build_territories_by_group_count(app: FastAPI, table: str, number_of_t
 
             number_of_features = results['count']
 
-            number_of_features_per_territories = int(number_of_features / number_of_territories) + 1
+            number_of_features_per_territory = int(number_of_features / number_of_territories) + 1
 
-            await generate_territory_column(app, table, number_of_features_per_territories, number_of_territories)
+            await generate_territory_column(app, table, number_of_features_per_territory, number_of_territories)
 
             services.processes[process_id]['status'] = "SUCCESS"
             services.processes[process_id]['completion_time'] = datetime.datetime.now()
@@ -89,7 +89,7 @@ async def build_territories_by_group_count(app: FastAPI, table: str, number_of_t
         services.processes[process_id]['run_time_in_seconds'] = datetime.datetime.now()-start
 
 
-async def build_territories_by_features_per_group(app: FastAPI, table: str, number_of_features_per_territories: int, process_id: str):
+async def build_territories_by_features_per_group(app: FastAPI, table: str, number_of_features_per_territory: int, process_id: str):
     """
     Method to build territories based off of number of features per group.
 
@@ -120,9 +120,9 @@ async def build_territories_by_features_per_group(app: FastAPI, table: str, numb
 
             await con.fetchrow(query)
 
-            number_of_territories = int(number_of_features / number_of_features_per_territories)
+            number_of_territories = int(number_of_features / number_of_features_per_territory)
 
-            await generate_territory_column(app, table, number_of_features_per_territories, number_of_territories)
+            await generate_territory_column(app, table, number_of_features_per_territory, number_of_territories)
             
             services.processes[process_id]['status'] = "SUCCESS"
             services.processes[process_id]['completion_time'] = datetime.datetime.now()

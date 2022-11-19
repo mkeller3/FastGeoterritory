@@ -35,7 +35,7 @@ async def build_territories_by_feature_count(info: models.BuildTerritoriesByFeat
         territory_queries.build_territories_by_features_per_group,
         app=request.app,
         table=info.table,
-        number_of_features_per_territories=info.number_of_features_per_territories,
+        number_of_features_per_territory=info.number_of_features_per_territory,
         process_id=process_id
     )
 

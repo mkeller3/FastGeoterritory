@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class BuildTerritoriesByFeatureCount(BaseModel):
     table: str
-    number_of_features_per_territories: int
+    number_of_features_per_territory: int
 
 class BuildTerritoriesByGroupCount(BaseModel):
     table: str
