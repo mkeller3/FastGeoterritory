@@ -48,19 +48,19 @@ Build Dockerfile into a docker image to deploy to the cloud.
 Any time a territory map is being submitted to be built it given a process_id to have the territory be built in the background using [FastAPI's Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/). To check the
 status of your territory being built you can call this endpoint with the process_id.
 
-## Analysis Status Example Call
+### Analysis Status - Example Call
 ```shell
 /api/v1/services/status/472e29dc-91a8-41d3-b05f-cee34006e3f7
 ```
 
-## Analysis Status Example Output - Still Running
+### Analysis Status - Example Output - Still Running
 ```json
 {
     "status": "PENDING"
 }
 ```
 
-## Analysis Status Example Output - Complete
+### Analysis Status - Example Output - Complete
 ```json
 {
     "status": "SUCCESS",
@@ -70,7 +70,7 @@ status of your territory being built you can call this endpoint with the process
 }
 ```
 
-## Analysis Status Example Output - Error
+### Analysis Status - Example Output - Error
 ```json
 {
     "status": "FAILURE",
